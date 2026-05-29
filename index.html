@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测测你是什么类型的秘书 | 提升秘书品牌意识系列宣传</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f5f7fa;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        .option-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .option-btn {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        /* 修复隐藏样式兼容性 */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-8 px-4">
+    <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+        <!-- 头部栏目标题 -->
+        <div class="bg-[#2c3e50] text-white p-6 text-center">
+            <p class="text-sm opacity-80 mb-2">提升秘书品牌意识系列宣传 · 第二期</p>
+            <h1 class="text-[clamp(1.5rem,3vw,2.2rem)] font-bold">测测你是什么类型的秘书</h1>
+        </div>
+
+        <!-- 开始页面 -->
+        <div id="startPage" class="p-8">
+            <div class="text-center">
+                <div class="text-gray-600 mb-6 leading-relaxed">
+                    <p class="mb-3">第一期我们倡导<span class="font-bold text-[#2c3e50]">以个人为品牌，打造专属标签</span>。</p>
+                    <p>本次测试从工作习惯、处事风格、能力偏向出发，帮你挖掘自身闪光点，找到独属于你的秘书品牌定位。</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4 mb-8 text-sm text-gray-500">
+                    <p>📝 共15道单选题，请根据日常真实状态选择，凭第一直觉作答即可</p>
+                </div>
+                <button onclick="startQuiz()" class="bg-[#2c3e50] text-white px-10 py-3 rounded-lg text-lg hover:bg-[#34495e] transition">
+                    开始测试
+                </button>
+            </div>
+        </div>
+
+        <!-- 答题页面 -->
+        <div id="quizPage" class="p-8 hidden">
+            <div class="mb-6">
+                <div class="flex justify-between text-sm text-gray-500 mb-2">
+                    <span>答题进度</span>
+                    <span id="progressText">1/15</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div id="progressBar" class="bg-[#2c3e50] h-2 rounded-full" style="width: 6.67%"></div>
+                </div>
+            </div>
+
+            <h2 id="questionTitle" class="text-lg font-semibold text-gray-800 mb-6"></h2>
+            <div id="optionBox" class="space-y-4"></div>
+        </div>
+
+        <!-- 结果页面 -->
+        <div id="resultPage" class="p-8 hidden">
+            <div class="text-center">
+                <div class="w-20 h-20 rounded-full bg-[#2c3e50] text-white flex items-center justify-center mx-auto mb-4 text-2xl">
+                    结果
+                </div>
+                <h2 id="resultType" class="text-2xl font-bold text-[#2c3e50] mb-2"></h2>
+                <p id="resultTag" class="text-gray-500 mb-6 text-lg"></p>
+                
+                <div class="bg-gray-50 rounded-lg p-6 text-left mb-6">
+                    <h3 class="font-semibold text-gray-700 mb-3">✨ 你的核心闪光点</h3>
+                    <p id="resultAdvantage" class="text-gray-600 leading-relaxed"></p>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-6 text-left mb-8">
+                    <h3 class="font-semibold text-gray-700 mb-3">💡 个人品牌打造建议</h3>
+                    <p id="resultSuggest" class="text-gray-600 leading-relaxed"></p>
+                </div>
+
+                <button onclick="resetQuiz()" class="bg-gray-200 text-gray-700 px-8 py-2 rounded-lg hover:bg-gray-300 transition">
+                    重新测试
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let score = { A: 0, B: 0, C: 0, D: 0 };
+        let currentQ = 0;
+        const totalQ = 15;
+
+        const questionList = [
+            {
+                title: "1. 面对多项工作同时下达，你通常会？",
+                options: [
+                    { text: "梳理优先级，制定整体计划，统一分配推进", type: "A" },
+                    { text: "逐一核对细节，按顺序逐项完成，保证不出差错", type: "B" },
+                    { text: "及时对接相关人员，沟通协调后再开展工作", type: "C" },
+                    { text: "思考更高效、新颖的方式，优化现有工作流程", type: "D" }
+                ]
+            },
+            {
+                title: "2. 在会务组织工作中，你最擅长的环节是？",
+                options: [
+                    { text: "整体流程把控、人员分工、全局调度", type: "A" },
+                    { text: "会场布置、资料准备、流程细节检查", type: "B" },
+                    { text: "嘉宾接待、现场沟通、氛围维护", type: "C" },
+                    { text: "会议形式创新、互动环节设计、宣传亮点打造", type: "D" }
+                ]
+            },
+            {
+                title: "3. 撰写文稿、通知、总结类工作时，你的状态是？",
+                options: [
+                    { text: "搭建整体框架，把控行文逻辑与整体方向", type: "A" },
+                    { text: "逐字逐句打磨，核对格式、措辞、标点与数据", type: "B" },
+                    { text: "结合各方意见，兼顾不同岗位的表达需求", type: "C" },
+                    { text: "优化文案风格，加入新颖表达与创意排版", type: "D" }
+                ]
+            },
+            {
+                title: "4. 同事或伙伴遇到工作难题，你会？",
+                options: [
+                    { text: "帮对方梳理思路，给出整体解决方向", type: "A" },
+                    { text: "耐心协助核对细节，排查疏漏问题", type: "B" },
+                    { text: "主动倾听安抚，帮忙对接资源、沟通协调", type: "C" },
+                    { text: "提供新思路，尝试用不一样的方法解决问题", type: "D" }
+                ]
+            },
+            {
+                title: "5. 日常整理档案、台账、各类资料，你更喜欢？",
+                options: [
+                    { text: "规划分类体系，搭建标准化管理模式", type: "A" },
+                    { text: "精细归档、反复核对，保证资料完整无误", type: "B" },
+                    { text: "方便大家查阅，主动告知相关人员更新情况", type: "C" },
+                    { text: "优化整理形式，让资料展示更直观有趣", type: "D" }
+                ]
+            },
+            {
+                title: "6. 接到临时紧急任务，你的第一反应是？",
+                options: [
+                    { text: "快速统筹现有工作，合理调配时间完成", type: "A" },
+                    { text: "沉下心专注做事，紧盯细节避免出错", type: "B" },
+                    { text: "第一时间沟通对接，同步各方进度", type: "C" },
+                    { text: "灵活变通，尝试简化流程、创新方法", type: "D" }
+                ]
+            },
+            {
+                title: "7. 团队开展集体活动/宣传栏目，你偏向负责？",
+                options: [
+                    { text: "整体方案统筹、分工安排、进度管控", type: "A" },
+                    { text: "物料准备、内容校对、落地细节执行", type: "B" },
+                    { text: "人员联络、氛围调动、互动交流", type: "C" },
+                    { text: "主题策划、文案创意、视觉设计构思", type: "D" }
+                ]
+            },
+            {
+                title: "8. 你的工作风格更贴近以下哪一种？",
+                options: [
+                    { text: "目光长远，擅长规划，把控全局", type: "A" },
+                    { text: "严谨踏实，一丝不苟，注重细节", type: "B" },
+                    { text: "温和友善，擅长沟通，待人热忱", type: "C" },
+                    { text: "思维活跃，乐于探索，不拘一格", type: "D" }
+                ]
+            },
+            {
+                title: "9. 需要对接多个部门协作工作时，你更擅长？",
+                options: [
+                    { text: "明确各方职责，统一整体目标与节奏", type: "A" },
+                    { text: "记录对接内容，留存凭证，核对交接信息", type: "B" },
+                    { text: "穿梭各方沟通，化解分歧，推进协作", type: "C" },
+                    { text: "提出协作新形式，提升跨部门配合效率", type: "D" }
+                ]
+            },
+            {
+                title: "10. 复盘阶段性工作时，你重点关注？",
+                options: [
+                    { text: "整体目标完成情况、整体规划落地效果", type: "A" },
+                    { text: "细节漏洞、失误点、流程疏漏问题", type: "B" },
+                    { text: "人际配合、沟通衔接中的问题与改进", type: "C" },
+                    { text: "形式、方法上的不足，思考创新优化方向", type: "D" }
+                ]
+            },
+            {
+                title: "11. 安排每日工作计划，你习惯？",
+                options: [
+                    { text: "划分板块，统筹全天所有工作事项", type: "A" },
+                    { text: "逐条罗列，细化到每一项具体小事", type: "B" },
+                    { text: "结合他人安排，预留沟通对接时间", type: "C" },
+                    { text: "不拘泥固定清单，灵活调整节奏", type: "D" }
+                ]
+            },
+            {
+                title: "12. 对外联络、接待来访人员，你表现如何？",
+                options: [
+                    { text: "把控接待流程，统筹整体安排", type: "A" },
+                    { text: "准备相关资料，落实各项接待细节", type: "B" },
+                    { text: "热情交流，擅长拉近关系、顺畅沟通", type: "C" },
+                    { text: "打造特色接待形式，留下深刻印象", type: "D" }
+                ]
+            },
+            {
+                title: "13. 面对重复的常规工作，你会？",
+                options: [
+                    { text: "优化整体流程，让常规工作更有序", type: "A" },
+                    { text: "认真坚守标准，保证每一次都零差错", type: "B" },
+                    { text: "主动配合他人，维持良好协作氛围", type: "C" },
+                    { text: "尝试改变形式，让常规工作更有新意", type: "D" }
+                ]
+            },
+            {
+                title: "14. 在团队中，大家对你的评价更多是？",
+                options: [
+                    { text: "有大局观，做事有条理，能扛重任", type: "A" },
+                    { text: "细心靠谱，做事稳妥，让人放心", type: "B" },
+                    { text: "亲切随和，善于沟通，人缘很好", type: "C" },
+                    { text: "想法新颖，脑洞活跃，富有创意", type: "D" }
+                ]
+            },
+            {
+                title: "15. 想要打造个人工作标签，你更想突出？",
+                options: [
+                    { text: "统筹规划、全局把控的综合能力", type: "A" },
+                    { text: "严谨细致、精益求精的专业态度", type: "B" },
+                    { text: "善于沟通、协调联动的服务能力", type: "C" },
+                    { text: "创意策划、勇于创新的思维优势", type: "D" }
+                ]
+            }
+        ];
+
+        const resultInfo = {
+            A: {
+                name: "统筹领航型",
+                tag: "专属标签：全能统筹官",
+                advantage: "你拥有出色的大局观与统筹能力，擅长规划布局、分工调度、把控整体工作节奏。面对繁杂事务能快速理清脉络，是团队中天然的‘主心骨’，统筹规划、全局把控是你最亮眼的核心优势。",
+                suggest: "继续强化统筹管理能力，在工作中主动牵头整体事务，把‘靠谱统筹、善于规划’打造成你的专属品牌标签。多总结工作方法论，让大家提起统筹协调、整体安排，第一时间想到你。"
+            },
+            B: {
+                name: "细致匠心型",
+                tag: "专属标签：细节守护者",
+                advantage: "你严谨认真、心思缜密，对文字、流程、数据、会务细节有着极强的把控力。做事踏实稳重、精益求精，极少出现疏漏，细致、专业、靠谱是你深入人心的闪光点，是团队不可或缺的‘定心丸’。",
+                suggest: "深耕文稿撰写、会务执行、资料管理等精细类工作，将‘细致严谨、零差错’作为个人品牌名片。持续打磨专业功底，让‘细节把关’成为你的独家优势标签。"
+            },
+            C: {
+                name: "亲和联动型",
+                tag: "专属标签：暖心联络者",
+                advantage: "你性格亲和、情商出众，擅长人际沟通、内外对接、氛围营造。善于衔接各方、化解沟通障碍，待人真诚热忱，良好的沟通能力与亲和力是你最突出的特质，是团队的‘润滑剂’。",
+                suggest: "发挥沟通协调优势，主动承担联络、接待、跨部门对接类工作。把‘善于沟通、热心服务’塑造成个人标签，成为团队内外衔接的重要纽带，打造温暖可靠的个人品牌形象。"
+            },
+            D: {
+                name: "创意赋能型",
+                tag: "专属标签：创意操盘手",
+                advantage: "你思维灵活、乐于创新，不局限于固有模式，擅长策划宣传、设计形式、优化创意。面对工作敢于尝试新思路、新方法，创意与脑洞是你的核心竞争力，能为团队工作增添亮点与活力。",
+                suggest: "聚焦宣传、活动策划、内容创作等板块，大胆输出创意想法。将‘创意新颖、敢于突破’作为个人品牌标签，主动参与栏目策划、活动设计，让创意成为你的专属闪光点。"
+            }
+        };
+
+        function startQuiz() {
+            document.getElementById("startPage").classList.add("hidden");
+            document.getElementById("quizPage").classList.remove("hidden");
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questionList[currentQ];
+            document.getElementById("questionTitle").innerText = q.title;
+            document.getElementById("progressText").innerText = `${currentQ + 1}/${totalQ}`;
+            const progress = ((currentQ + 1) / totalQ) * 100;
+            document.getElementById("progressBar").style.width = progress + "%";
+
+            let optHtml = "";
+            q.options.forEach((item) => {
+                optHtml += `
+                    <button onclick="selectOption('${item.type}')" 
+                    class="option-btn w-full text-left p-4 border border-gray-200 rounded-lg bg-white hover:border-[#2c3e50]">
+                        ${item.text}
+                    </button>
+                `;
+            });
+            document.getElementById("optionBox").innerHTML = optHtml;
+        }
+
+        function selectOption(type) {
+            score[type]++;
+            currentQ++;
+            if (currentQ >= totalQ) {
+                showResult();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        function showResult() {
+            document.getElementById("quizPage").classList.add("hidden");
+            document.getElementById("resultPage").classList.remove("hidden");
+
+            let maxType = "A";
+            let maxScore = score.A;
+            if (score.B > maxScore) { maxScore = score.B; maxType = "B"; }
+            if (score.C > maxScore) { maxScore = score.C; maxType = "C"; }
+            if (score.D > maxScore) { maxScore = score.D; maxType = "D"; }
+
+            const res = resultInfo[maxType];
+            document.getElementById("resultType").innerText = "你的类型：" + res.name;
+            document.getElementById("resultTag").innerText = res.tag;
+            document.getElementById("resultAdvantage").innerText = res.advantage;
+            document.getElementById("resultSuggest").innerText = res.suggest;
+        }
+
+        function resetQuiz() {
+            score = { A: 0, B: 0, C: 0, D: 0 };
+            currentQ = 0;
+            document.getElementById("resultPage").classList.add("hidden");
+            document.getElementById("startPage").classList.remove("hidden");
+        }
+    </script>
+</body>
+</html>
