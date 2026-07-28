@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高情商向上合规沟通性格测试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#73A9C8',
+                        soft: '#E8F4F9',
+                        textDark: '#2C3E50',
+                        textLight: '#64748B',
+                        cardBg: '#FFFFFF',
+                        borderSoft: '#D1E5EF'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .shadow-soft {
+                box-shadow: 0 4px 16px rgba(115, 169, 200, 0.12);
+            }
+            .radio-item {
+                @apply border border-borderSoft rounded-lg p-4 transition-all duration-300 cursor-pointer hover:bg-soft;
+            }
+            .radio-active {
+                @apply bg-soft border-primary;
+            }
+            .btn-primary {
+                @apply bg-primary text-white py-3 px-8 rounded-full font-medium transition-all hover:opacity-90 shadow-soft;
+            }
+        }
+    </style>
+</head>
+<body class="bg-soft min-h-screen text-textDark font-sans py-8 px-4 md:py-12">
+    <div class="max-w-3xl mx-auto">
+        <!-- 头部标题区域 -->
+        <header class="text-center mb-10">
+            <div class="inline-block bg-white rounded-full w-16 h-16 flex items-center justify-center shadow-soft mb-4">
+                <i class="fa fa-comments-o text-primary text-2xl"></i>
+            </div>
+            <h1 class="text-[clamp(1.5rem,3vw,2.2rem)] font-bold mb-2">对不合理要求说不 · 职场沟通性格测试</h1>
+            <p class="text-textLight max-w-xl mx-auto">高情商向上合规沟通测评，凭第一直觉选择，查看你的职场处事风格</p>
+        </header>
+
+        <!-- 测试卡片容器 -->
+        <div id="testBox" class="bg-cardBg rounded-2xl shadow-soft p-6 md:p-10 mb-8">
+            <div id="questionList">
+                <!-- 题目由JS动态渲染 -->
+            </div>
+
+            <!-- 提交按钮 -->
+            <div class="text-center mt-10">
+                <button id="submitBtn" class="btn-primary">
+                    <i class="fa fa-check mr-2"></i>查看测评结果
+                </button>
+            </div>
+        </div>
+
+        <!-- 结果展示区域（默认隐藏） -->
+        <div id="resultBox" class="hidden bg-cardBg rounded-2xl shadow-soft p-6 md:p-10">
+            <div class="text-center mb-6">
+                <div class="inline-block bg-soft rounded-full w-20 h-20 flex items-center justify-center mb-4">
+                    <i id="resultIcon" class="fa fa-user-o text-primary text-3xl"></i>
+                </div>
+                <h2 class="text-xl font-bold mb-1">你的职场处事风格：<span id="resultTitle" class="text-primary"></span></h2>
+            </div>
+
+            <div class="space-y-5">
+                <div>
+                    <h3 class="font-semibold text-lg mb-2"><i class="fa fa-info-circle text-primary mr-2"></i>性格特点</h3>
+                    <p id="resultDesc" class="text-textLight leading-relaxed"></p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-2"><i class="fa fa-lightbulb-o text-primary mr-2"></i>心态调整提示</h3>
+                    <p id="resultTip" class="text-textLight leading-relaxed"></p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-2"><i class="fa fa-book text-primary mr-2"></i>推荐提升读物</h3>
+                    <p id="resultBook" class="text-textLight leading-relaxed"></p>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <button id="resetBtn" class="border border-primary text-primary py-2 px-6 rounded-full hover:bg-soft transition-all">
+                    <i class="fa fa-refresh mr-2"></i>重新测试
+                </button>
+            </div>
+        </div>
+
+        <!-- 底部说明 -->
+        <footer class="text-center text-textLight text-sm mt-8">
+            <p>向上沟通合规测评 · 坚守制度底线，双向保护职场安全</p>
+        </footer>
+    </div>
+
+    <script>
+        // 10道测试题目数据
+        const questionData = [
+            {
+                q: "1. 领导让你违规私用公司物资，你的第一反应？",
+                options: [
+                    { label: "A. 不敢拒绝，先答应，后续自己想办法掩盖", val: "A" },
+                    { label: "B. 当场直接告知制度，直白拒绝", val: "B" },
+                    { label: "C. 含糊打岔、不表态，拖着不落实", val: "C" }
+                ]
+            },
+            {
+                q: "2. 明知领导要求存在合规风险，对方坚持让你照办，你会？",
+                options: [
+                    { label: "A. 怕惹对方不快，妥协配合", val: "A" },
+                    { label: "B. 直接点明后果，语气强硬拒绝", val: "B" },
+                    { label: "C. 假装没领会意思，搁置不处理", val: "C" }
+                ]
+            },
+            {
+                q: "3. 沟通违规事项时气氛变尴尬，你会？",
+                options: [
+                    { label: "A. 立刻让步，缓和当下气氛", val: "A" },
+                    { label: "B. 坚持自身观点，继续讲道理", val: "B" },
+                    { label: "C. 沉默低头，结束这段对话", val: "C" }
+                ]
+            },
+            {
+                q: "4. 总担心拒绝领导会留下坏印象，习惯性顺从对方所有要求？",
+                options: [
+                    { label: "A. 经常这样，优先照顾领导情绪", val: "A" },
+                    { label: "B. 完全不会，规则优先于人情", val: "B" },
+                    { label: "C. 不想掺和，能躲开就躲开", val: "C" }
+                ]
+            },
+            {
+                q: "5. 领导提出不走流程、私下简化办事，你会？",
+                options: [
+                    { label: "A. 觉得小事没必要较真，配合照做", val: "A" },
+                    { label: "B. 直接表明制度不允许，没有商量余地", val: "B" },
+                    { label: "C. 敷衍应付，既不答应也不回绝", val: "C" }
+                ]
+            },
+            {
+                q: "6. 面对不合规安排，你常常内心紧张纠结、左右为难？",
+                options: [
+                    { label: "A. 频繁出现，特别害怕产生冲突", val: "A" },
+                    { label: "B. 不会纠结，直接说出真实想法", val: "B" },
+                    { label: "C. 干脆放置一旁，逃避沟通", val: "C" }
+                ]
+            },
+            {
+                q: "7. 你认同秘书要无条件配合领导所有安排吗？",
+                options: [
+                    { label: "A. 认同，尽可能满足领导所有需求", val: "A" },
+                    { label: "B. 不认同，触碰底线绝对不配合", val: "B" },
+                    { label: "C. 无所谓，不想主动处理这类难题", val: "C" }
+                ]
+            },
+            {
+                q: "8. 只有你清楚这件事违规，但领导执意要推进，你会？",
+                options: [
+                    { label: "A. 顺从执行，不敢主动提醒风险", val: "A" },
+                    { label: "B. 当场劝阻，直白指出问题", val: "B" },
+                    { label: "C. 装作不知情，不主动开口提醒", val: "C" }
+                ]
+            },
+            {
+                q: "9. 相比守住合规底线，你更看重当下相处氛围和谐？",
+                options: [
+                    { label: "A. 是的，不想发生任何争执", val: "A" },
+                    { label: "B. 不是，原则底线绝不能退让", val: "B" },
+                    { label: "C. 两者都不在意，只想避开麻烦", val: "C" }
+                ]
+            },
+            {
+                q: "10. 领导安排带有风险的工作，你的选择是？",
+                options: [
+                    { label: "A. 全部承接，独自承担潜在隐患", val: "A" },
+                    { label: "B. 当场直接驳回，不提供折中方案", val: "B" },
+                    { label: "C. 拖延搁置，盼着领导自行放弃", val: "C" }
+                ]
+            }
+        ];
+
+        // 三种测评结果配置
+        const resultConfig = {
+            A: {
+                title: "冲突回避讨好型",
+                desc: "心里清楚事情不合规，但惧怕人际冲突、在意领导感受，习惯妥协退让，长期内心内耗，容易给自己埋下追责隐患。",
+                tip: "我拒绝的是违规操作，不是领导这个人，提醒风险是本职工作，不算顶撞；提前备好一套共情+合规方案话术，遇到踩线需求直接套用，不用临时纠结。",
+                book: "《非暴力沟通》《被讨厌的勇气》"
+            },
+            B: {
+                title: "直白强硬型",
+                desc: "坚守公司制度，底线清晰，但沟通缺少共情，习惯直接硬刚，容易让领导下不来台，激化上下级矛盾。",
+                tip: "先接纳对方的难处再讲规则，温和表达底线，不等于放弃原则；每次开口前加一句共情铺垫，再说明约束、给出替代方案。",
+                book: "《关键对话》"
+            },
+            C: {
+                title: "消极观望逃避型",
+                desc: "既不愿违规配合，也不敢主动沟通劝阻，选择沉默、拖延、装傻回避，问题只会持续发酵，最后被动承担责任。",
+                tip: "主动沟通提醒是提前化解麻烦，不是制造矛盾；收到不合理需求当天简短反馈，不拖延、不回避，同步可行的合规办法。",
+                book: "《向上管理》"
+            }
+        };
+
+        const questionWrap = document.getElementById("questionList");
+        const submitBtn = document.getElementById("submitBtn");
+        const resetBtn = document.getElementById("resetBtn");
+        const testBox = document.getElementById("testBox");
+        const resultBox = document.getElementById("resultBox");
+
+        // 渲染所有题目
+        function renderQuestions() {
+            questionWrap.innerHTML = "";
+            questionData.forEach((item, index) => {
+                const qWrap = document.createElement("div");
+                qWrap.className = "mb-8 last:mb-0";
+                qWrap.innerHTML = `
+                    <p class="font-medium mb-3">${item.q}</p>
+                    <div class="grid gap-2" id="q${index}">
+                        ${item.options.map(opt => `
+                            <label class="radio-item flex items-center gap-3">
+                                <input type="radio" name="q${index}" value="${opt.val}" class="accent-primary w-4 h-4">
+                                <span>${opt.label}</span>
+                            </label>
+                        `).join("")}
+                    </div>
+                `;
+                questionWrap.appendChild(qWrap);
+            })
+        }
+
+        // 获取所有选择并统计
+        function getSelectResult() {
+            const count = {A:0, B:0, C:0};
+            for(let i=0; i<questionData.length; i++){
+                const radios = document.querySelectorAll(`input[name="q${i}"]`);
+                let selected = null;
+                radios.forEach(r=>{
+                    if(r.checked) selected = r.value;
+                })
+                if(!selected) return null; // 有未答题目
+                count[selected] += 1;
+            }
+            // 找出最多选项
+            let maxKey = "A";
+            let maxNum = count.A;
+            if(count.B > maxNum) {maxKey = "B"; maxNum = count.B;}
+            if(count.C > maxNum) {maxKey = "C"; maxNum = count.C;}
+            return maxKey;
+        }
+
+        // 展示测评结果
+        function showResult(type) {
+            const res = resultConfig[type];
+            document.getElementById("resultTitle").innerText = res.title;
+            document.getElementById("resultDesc").innerText = res.desc;
+            document.getElementById("resultTip").innerText = res.tip;
+            document.getElementById("resultBook").innerText = res.book;
+            testBox.classList.add("hidden");
+            resultBox.classList.remove("hidden");
+        }
+
+        // 重置测试
+        function resetTest() {
+            renderQuestions();
+            resultBox.classList.add("hidden");
+            testBox.classList.remove("hidden");
+        }
+
+        // 提交点击事件
+        submitBtn.addEventListener("click", ()=>{
+            const res = getSelectResult();
+            if(res === null){
+                alert("请完成全部10道题目后再提交！");
+                return;
+            }
+            showResult(res);
+        })
+
+        // 重置按钮
+        resetBtn.addEventListener("click", resetTest);
+
+        // 页面初始化渲染题目
+        renderQuestions();
+    </script>
+</body>
+</html>
