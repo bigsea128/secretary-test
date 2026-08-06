@@ -3,294 +3,649 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>高情商向上合规沟通性格测试</title>
+    <title>秘书岗位合规意识测评｜塔罗风格小测试</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/v4-shims.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#73A9C8',
-                        soft: '#E8F4F9',
-                        textDark: '#2C3E50',
-                        textLight: '#64748B',
-                        cardBg: '#FFFFFF',
-                        borderSoft: '#D1E5EF'
+                        primary: '#A78BFA',
+                        secondary: '#FBCFE8',
+                        accent: '#E0E7FF',
+                        dark: '#1E1B4B',
+                        mystic: '#312E81',
+                        gold: '#F59E0B',
+                        mist: '#F9FAFB'
                     },
                     fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                    },
+                        sans: ['PingFang SC', 'Microsoft YaHei', 'sans-serif'],
+                        serif: ['Georgia', 'Noto Serif SC', 'serif']
+                    }
                 }
             }
         }
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            .shadow-soft {
-                box-shadow: 0 4px 16px rgba(115, 169, 200, 0.12);
+            .content-auto {
+                content-visibility: auto;
             }
-            .radio-item {
-                @apply border border-borderSoft rounded-lg p-4 transition-all duration-300 cursor-pointer hover:bg-soft;
+            .mystic-bg {
+                background: radial-gradient(circle at top left, rgba(167, 139, 250, 0.14), transparent 35%),
+                            radial-gradient(circle at bottom right, rgba(251, 206, 232, 0.14), transparent 35%),
+                            linear-gradient(to bottom right, #F9FAFB, #F3E8FF, #F9FAFB);
             }
-            .radio-active {
-                @apply bg-soft border-primary;
+            .card-glass {
+                background: rgba(255, 255, 255, 0.78);
+                backdrop-filter: blur(12px);
+                border: 1px solid rgba(167, 139, 250, 0.18);
             }
-            .btn-primary {
-                @apply bg-primary text-white py-3 px-8 rounded-full font-medium transition-all hover:opacity-90 shadow-soft;
+            .card-hover {
+                transition: all 0.32s ease;
             }
+            .card-hover:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 10px 30px rgba(167, 139, 250, 0.25);
+            }
+            .btn-mystic {
+                background: linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%);
+                transition: all 0.3s ease;
+            }
+            .btn-mystic:hover {
+                background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+                transform: translateY(-1px);
+            }
+            .btn-secondary {
+                background: linear-gradient(135deg, #FBCFE8 0%, #F9A8D4 100%);
+                transition: all 0.3s ease;
+            }
+            .btn-secondary:hover {
+                background: linear-gradient(135deg, #F9A8D4 0%, #F472B6 100%);
+                transform: translateY(-1px);
+            }
+            .tarot-border {
+                position: relative;
+                overflow: hidden;
+            }
+            .tarot-border::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 5px;
+                background: linear-gradient(90deg, #A78BFA, #F59E0B, #FBCFE8, #A78BFA);
+                background-size: 300% 100%;
+                animation: shimmer 6s linear infinite;
+            }
+            @keyframes shimmer {
+                0% { background-position: 0% 0%; }
+                100% { background-position: 300% 0%; }
+            }
+            .star-dot {
+                position: absolute;
+                width: 2px;
+                height: 2px;
+                background: rgba(167, 139, 250, 0.6);
+                border-radius: 50%;
+                animation: twinkle 3s infinite alternate;
+            }
+            @keyframes twinkle {
+                0% { opacity: 0.3; }
+                100% { opacity: 1; }
+            }
+            .fade-in {
+                animation: fadeIn 0.6s ease-in-out;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(12px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        }
+        /* 粒子特效容器全局固定顶层 */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
         }
     </style>
 </head>
-<body class="bg-soft min-h-screen text-textDark font-sans py-8 px-4 md:py-12">
-    <div class="max-w-3xl mx-auto">
-        <!-- 头部标题区域 -->
-        <header class="text-center mb-10">
-            <div class="inline-block bg-white rounded-full w-16 h-16 flex items-center justify-center shadow-soft mb-4">
-                <i class="fa fa-comments-o text-primary text-2xl"></i>
+<body class="mystic-bg min-h-screen font-sans text-dark relative overflow-x-hidden">
+    <!-- 塔罗点击粒子画布 -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- 星点装饰 -->
+    <div class="star-dot" style="top: 8%; left: 12%; animation-delay: 0s;"></div>
+    <div class="star-dot" style="top: 15%; left: 85%; animation-delay: 0.5s;"></div>
+    <div class="star-dot" style="top: 30%; left: 5%; animation-delay: 1s;"></div>
+    <div class="star-dot" style="top: 50%; left: 92%; animation-delay: 1.5s;"></div>
+    <div class="star-dot" style="top: 70%; left: 18%; animation-delay: 2s;"></div>
+    <div class="star-dot" style="top: 85%; left: 80%; animation-delay: 2.5s;"></div>
+
+    <!-- 页面容器 -->
+    <div class="container mx-auto px-4 py-8 max-w-4xl relative z-10">
+        <!-- 头部标题 -->
+        <header class="text-center mb-12 fade-in">
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <i class="fas fa-moon text-purple-500 text-2xl"></i>
+                <i class="fas fa-star text-yellow-500 text-xl"></i>
+                <i class="fas fa-crystal-ball text-purple-600 text-2xl"></i>
             </div>
-            <h1 class="text-[clamp(1.5rem,3vw,2.2rem)] font-bold mb-2">对不合理要求说不 · 职场沟通性格测试</h1>
-            <p class="text-textLight max-w-xl mx-auto">高情商向上合规沟通测评，凭第一直觉选择，查看你的职场处事风格</p>
+            <h1 class="text-[clamp(2rem,5vw,3rem)] font-bold bg-gradient-to-r from-purple-600 via-indigo-500 to-pink-500 bg-clip-text text-transparent mb-4">
+                秘书岗位合规意识测评
+            </h1>
+            <p class="text-dark/70 text-lg max-w-2xl mx-auto">
+                通过10道职场情境题，探寻你在合规边界、人际压力与领导沟通中的隐藏处事模式。
+            </p>
         </header>
 
-        <!-- 测试卡片容器 -->
-        <div id="testBox" class="bg-cardBg rounded-2xl shadow-soft p-6 md:p-10 mb-8">
-            <div id="questionList">
-                <!-- 题目由JS动态渲染 -->
-            </div>
-
-            <!-- 提交按钮 -->
-            <div class="text-center mt-10">
-                <button id="submitBtn" class="btn-primary">
-                    <i class="fa fa-check mr-2"></i>查看测评结果
-                </button>
-            </div>
-        </div>
-
-        <!-- 结果展示区域（默认隐藏） -->
-        <div id="resultBox" class="hidden bg-cardBg rounded-2xl shadow-soft p-6 md:p-10">
-            <div class="text-center mb-6">
-                <div class="inline-block bg-soft rounded-full w-20 h-20 flex items-center justify-center mb-4">
-                    <i id="resultIcon" class="fa fa-user-o text-primary text-3xl"></i>
+        <!-- 介绍页面 -->
+        <section id="intro-section" class="fade-in">
+            <div class="card-glass rounded-2xl shadow-lg p-8 md:p-12 tarot-border">
+                <div class="text-center mb-8">
+                    <div class="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <i class="fas fa-tarot text-white text-3xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-dark mb-4">欢迎来到合规意识测试</h2>
+                    <p class="text-dark/70 leading-relaxed">
+                        本测试结合秘书岗位常见合规场景，帮你看清面对领导压力、制度边界与人际和谐时的行为倾向。
+                        答案没有对错，请选择最贴合你真实做法的选项。
+                    </p>
                 </div>
-                <h2 class="text-xl font-bold mb-1">你的职场处事风格：<span id="resultTitle" class="text-primary"></span></h2>
-            </div>
 
-            <div class="space-y-5">
-                <div>
-                    <h3 class="font-semibold text-lg mb-2"><i class="fa fa-info-circle text-primary mr-2"></i>性格特点</h3>
-                    <p id="resultDesc" class="text-textLight leading-relaxed"></p>
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="text-center p-6 bg-white/60 rounded-xl card-hover border border-purple-100">
+                        <i class="fas fa-moon text-purple-500 text-3xl mb-4"></i>
+                        <h3 class="font-bold text-lg mb-2">10道情境题</h3>
+                        <p class="text-dark/60 text-sm">模拟真实秘书工作场景</p>
+                    </div>
+                    <div class="text-center p-6 bg-white/60 rounded-xl card-hover border border-pink-100">
+                        <i class="fas fa-balance-scale text-pink-500 text-3xl mb-4"></i>
+                        <h3 class="font-bold text-lg mb-2">3种处事类型</h3>
+                        <p class="text-dark/60 text-sm">解读你的职场行为模式</p>
+                    </div>
+                    <div class="text-center p-6 bg-white/60 rounded-xl card-hover border border-indigo-100">
+                        <i class="fas fa-book-open text-indigo-500 text-3xl mb-4"></i>
+                        <h3 class="font-bold text-lg mb-2">专属成长建议</h3>
+                        <p class="text-dark/60 text-sm">提供沟通、边界与合规建议</p>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="font-semibold text-lg mb-2"><i class="fa fa-lightbulb-o text-primary mr-2"></i>心态调整提示</h3>
-                    <p id="resultTip" class="text-textLight leading-relaxed"></p>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-lg mb-2"><i class="fa fa-book text-primary mr-2"></i>推荐提升读物</h3>
-                    <p id="resultBook" class="text-textLight leading-relaxed"></p>
+
+                <div class="text-center">
+                    <button id="start-btn" class="btn-mystic text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg">
+                        <i class="fas fa-play mr-2"></i>开始测试
+                    </button>
                 </div>
             </div>
+        </section>
 
-            <div class="text-center mt-8">
-                <button id="resetBtn" class="border border-primary text-primary py-2 px-6 rounded-full hover:bg-soft transition-all">
-                    <i class="fa fa-refresh mr-2"></i>重新测试
-                </button>
+        <!-- 答题页面 -->
+        <section id="quiz-section" class="hidden fade-in">
+            <div class="card-glass rounded-2xl shadow-lg p-8 md:p-12 tarot-border">
+                <!-- 进度条 -->
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-dark/70 font-medium">第 <span id="current-question">1</span> / 10 题</span>
+                        <span class="text-dark/70 font-medium">完成度 <span id="progress-percent">0</span>%</span>
+                    </div>
+                    <div class="w-full bg-purple-100 rounded-full h-3">
+                        <div id="progress-bar" class="h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- 题目区域 -->
+                <div class="mb-8">
+                    <h3 id="question-text" class="text-xl font-bold text-dark mb-6 leading-relaxed"></h3>
+                    <div id="options-container" class="space-y-4"></div>
+                </div>
+
+                <!-- 按钮区域 -->
+                <div class="flex justify-between">
+                    <button id="prev-btn" class="btn-secondary text-dark px-6 py-3 rounded-xl font-medium hidden">
+                        <i class="fas fa-arrow-left mr-2"></i>上一题
+                    </button>
+                    <div class="flex-1"></div>
+                    <button id="next-btn" class="btn-mystic text-white px-6 py-3 rounded-xl font-medium" disabled>
+                        下一题<i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <!-- 底部说明 -->
-        <footer class="text-center text-textLight text-sm mt-8">
-            <p>向上沟通合规测评 · 坚守制度底线，双向保护职场安全</p>
+        <!-- 结果页面 -->
+        <section id="result-section" class="hidden fade-in">
+            <div class="card-glass rounded-2xl shadow-lg p-8 md:p-12 tarot-border">
+                <div class="text-center mb-8">
+                    <div class="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <i class="fas fa-user-check text-white text-3xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-dark mb-4">你的测试结果</h2>
+                    <p class="text-dark/70">根据你的选择，我们为你解读专属的职场处事风格与成长方向。</p>
+                </div>
+
+                <!-- 结果核心内容 -->
+                <div id="result-content" class="space-y-8"></div>
+
+                <!-- 重新测试按钮 -->
+                <div class="text-center mt-8">
+                    <button id="restart-btn" class="btn-mystic text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg">
+                        <i class="fas fa-redo mr-2"></i>重新测试
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 底部 -->
+        <footer class="text-center mt-12 text-dark/50 text-sm">
+            <p>© 2026 秘书岗位合规意识测评｜温柔神秘版</p>
         </footer>
     </div>
 
     <script>
-        // 10道测试题目数据
-        const questionData = [
+        // ========== 塔罗点击粒子特效逻辑 ==========
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // 粒子类 塔罗星芒样式
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 4 + 1;
+                this.speedX = Math.random() * 4 - 2;
+                this.speedY = Math.random() * -3 - 1;
+                this.life = 1;
+                this.decay = Math.random() * 0.015 + 0.008;
+                // 塔罗紫、浅粉、星光金三色粒子
+                const colorList = ['#A78BFA','#FBCFE8','#F59E0B'];
+                this.color = colorList[Math.floor(Math.random() * colorList.length)];
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life -= this.decay;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color + Math.floor(this.life * 255).toString(16).padStart(2,'0');
+                ctx.fill();
+            }
+        }
+
+        // 生成塔罗粒子
+        function createTarotParticles(x, y, count = 22) {
+            for(let i=0; i<count; i++){
+                particles.push(new Particle(x,y));
+            }
+        }
+
+        // 动画循环
+        function animateParticles() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            for(let i = particles.length - 1; i >= 0; i--){
+                const p = particles[i];
+                p.update();
+                p.draw();
+                if(p.life <= 0) particles.splice(i,1);
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // 全局点击监听触发粒子
+        document.addEventListener('click', (e)=>{
+            createTarotParticles(e.clientX, e.clientY, 22);
+        })
+
+        // ========== 测评逻辑（已完全匹配最新Excel题目） ==========
+        const questions = [
             {
-                q: "1. 领导让你违规私用公司物资，你的第一反应？",
+                id: 1,
+                text: "领导让你违规私用公司物资，你的第一反应？",
                 options: [
-                    { label: "A. 不敢拒绝，先答应，后续自己想办法掩盖", val: "A" },
-                    { label: "B. 当场直接告知制度，直白拒绝", val: "B" },
-                    { label: "C. 含糊打岔、不表态，拖着不落实", val: "C" }
+                    { id: 'A', text: "委婉说明制度规定，指出行为不合规，请示合规处理方式", type: 'principle', score: 3 },
+                    { id: 'B', text: "不敢直接拒绝，先行答应下来，私下设法掩盖该问题", type: 'compliant', score: 1 },
+                    { id: 'C', text: "言语含糊打岔，不明确表态，采取拖延搁置的做法", type: 'avoidant', score: 2 }
                 ]
             },
             {
-                q: "2. 明知领导要求存在合规风险，对方坚持让你照办，你会？",
+                id: 2,
+                text: "工作在岗期间，领导临时安排你协助处理非工作类私人琐事，你会如何处置？",
                 options: [
-                    { label: "A. 怕惹对方不快，妥协配合", val: "A" },
-                    { label: "B. 直接点明后果，语气强硬拒绝", val: "B" },
-                    { label: "C. 假装没领会意思，搁置不处理", val: "C" }
+                    { id: 'A', text: "放下手头本职工作，优先完成领导私事，全力满足领导的个人安排", type: 'compliant', score: 1 },
+                    { id: 'B', text: "守住工作时间公私界限，态度得体，不生硬对抗，兼顾上下级关系与岗位职责", type: 'principle', score: 3 },
+                    { id: 'C', text: "表面应承领导安排，既不跟领导沟通，也不落实私事", type: 'avoidant', score: 2 }
                 ]
             },
             {
-                q: "3. 沟通违规事项时气氛变尴尬，你会？",
+                id: 3,
+                text: "沟通违规事项时气氛变尴尬，你会？",
                 options: [
-                    { label: "A. 立刻让步，缓和当下气氛", val: "A" },
-                    { label: "B. 坚持自身观点，继续讲道理", val: "B" },
-                    { label: "C. 沉默低头，结束这段对话", val: "C" }
+                    { id: 'A', text: "选择沉默不发言，结束本次对话，不再继续沟通此事", type: 'avoidant', score: 2 },
+                    { id: 'B', text: "优先缓和现场气氛，放弃坚持立场，顺从领导的想法", type: 'compliant', score: 1 },
+                    { id: 'C', text: "稳住沟通语气态度，重申相关风险，择机再次汇报沟通", type: 'principle', score: 3 }
                 ]
             },
             {
-                q: "4. 总担心拒绝领导会留下坏印象，习惯性顺从对方所有要求？",
+                id: 4,
+                text: "总担心拒绝领导会留下坏印象，习惯性顺从对方所有要求？",
                 options: [
-                    { label: "A. 经常这样，优先照顾领导情绪", val: "A" },
-                    { label: "B. 完全不会，规则优先于人情", val: "B" },
-                    { label: "C. 不想掺和，能躲开就躲开", val: "C" }
+                    { id: 'A', text: "尽量远离矛盾冲突，不愿卷入麻烦，遇事能够躲开就躲开", type: 'avoidant', score: 2 },
+                    { id: 'B', text: "经常出现此种心态，优先顾及领导感受，习惯顺从其要求", type: 'compliant', score: 1 },
+                    { id: 'C', text: "拒绝无底线的顺从，区分人情与制度，客观提示相关风险", type: 'principle', score: 3 }
                 ]
             },
             {
-                q: "5. 领导提出不走流程、私下简化办事，你会？",
+                id: 5,
+                text: "领导提出不走流程、私下简化办事，你会？",
                 options: [
-                    { label: "A. 觉得小事没必要较真，配合照做", val: "A" },
-                    { label: "B. 直接表明制度不允许，没有商量余地", val: "B" },
-                    { label: "C. 敷衍应付，既不答应也不回绝", val: "C" }
+                    { id: 'A', text: "讲明流程制度约束，点明跳过流程隐患，给出合规办理路径", type: 'principle', score: 3 },
+                    { id: 'B', text: "采取敷衍应付态度，既不明确答应，也不直接予以回绝", type: 'avoidant', score: 2 },
+                    { id: 'C', text: "认为属于细小琐事，不必过分较真，配合完成相关操作", type: 'compliant', score: 1 }
                 ]
             },
             {
-                q: "6. 面对不合规安排，你常常内心紧张纠结、左右为难？",
+                id: 6,
+                text: "面对不合规安排，你常常内心紧张纠结、左右为难？",
                 options: [
-                    { label: "A. 频繁出现，特别害怕产生冲突", val: "A" },
-                    { label: "B. 不会纠结，直接说出真实想法", val: "B" },
-                    { label: "C. 干脆放置一旁，逃避沟通", val: "C" }
+                    { id: 'A', text: "直接把事情放一边，不愿正面沟通，采取消极逃避的方式", type: 'avoidant', score: 2 },
+                    { id: 'B', text: "内心频繁感到纠结，惧怕发生冲突，很难表达自身立场", type: 'compliant', score: 1 },
+                    { id: 'C', text: "虽存有心理顾虑，厘清制度边界，客观提示潜在的风险", type: 'principle', score: 3 }
                 ]
             },
             {
-                q: "7. 你认同秘书要无条件配合领导所有安排吗？",
+                id: 7,
+                text: "你认同秘书要无条件配合领导所有安排吗？",
                 options: [
-                    { label: "A. 认同，尽可能满足领导所有需求", val: "A" },
-                    { label: "B. 不认同，触碰底线绝对不配合", val: "B" },
-                    { label: "C. 无所谓，不想主动处理这类难题", val: "C" }
+                    { id: 'A', text: "对此持无所谓态度，不想主动介入，回避处理这类难题", type: 'avoidant', score: 2 },
+                    { id: 'B', text: "不认同无条件服从，合理任务全力落实，违规事项做好风险提示", type: 'principle', score: 3 },
+                    { id: 'C', text: "表示对此予以认同，尽量满足诉求，配合领导各项安排", type: 'compliant', score: 1 }
                 ]
             },
             {
-                q: "8. 只有你清楚这件事违规，但领导执意要推进，你会？",
+                id: 8,
+                text: "某项工作的完整流程尚未取得上级领导审批通过，直接主管安排你先行开展相关工作，表示后续会补全上级审批手续，你该怎么处理？",
                 options: [
-                    { label: "A. 顺从执行，不敢主动提醒风险", val: "A" },
-                    { label: "B. 当场劝阻，直白指出问题", val: "B" },
-                    { label: "C. 装作不知情，不主动开口提醒", val: "C" }
+                    { id: 'A', text: "听从主管安排立刻启动工作，不主动留存事项未完成上级审批的相关记录", type: 'compliant', score: 1 },
+                    { id: 'B', text: "如实告知主管审批管理相关规范，提前操作存在合规风险，建议待上级审批完成后再推进", type: 'principle', score: 3 },
+                    { id: 'C', text: "不正面给出同意或拒绝答复，委婉转移话题搁置此事，等待主管不再提及", type: 'avoidant', score: 2 }
                 ]
             },
             {
-                q: "9. 相比守住合规底线，你更看重当下相处氛围和谐？",
+                id: 9,
+                text: "相比守住合规底线，你更看重当下相处氛围和谐？",
                 options: [
-                    { label: "A. 是的，不想发生任何争执", val: "A" },
-                    { label: "B. 不是，原则底线绝不能退让", val: "B" },
-                    { label: "C. 两者都不在意，只想避开麻烦", val: "C" }
+                    { id: 'A', text: "看重人际和睦关系，极力避免争执，优先维护现场气氛", type: 'compliant', score: 1 },
+                    { id: 'B', text: "重视良好沟通氛围，但坚守制度底线，理性化解沟通对立", type: 'principle', score: 3 },
+                    { id: 'C', text: "二者均不太在意，只求远离是非，避开相关矛盾麻烦", type: 'avoidant', score: 2 }
                 ]
             },
             {
-                q: "10. 领导安排带有风险的工作，你的选择是？",
+                id: 10,
+                text: "有同事需要调整在岗登记信息，领导以私人交情为由，要求你跳过常规核对步骤直接修改记录，后续再补相关佐证手续，你该如何处理？",
                 options: [
-                    { label: "A. 全部承接，独自承担潜在隐患", val: "A" },
-                    { label: "B. 当场直接驳回，不提供折中方案", val: "B" },
-                    { label: "C. 拖延搁置，盼着领导自行放弃", val: "C" }
+                    { id: 'A', text: "遵照领导要求直接修改登记记录，延后补齐相关佐证材料", type: 'compliant', score: 1 },
+                    { id: 'B', text: "口头答应领导要求，月底汇总登记时仍按照原始真实记录填报", type: 'avoidant', score: 2 },
+                    { id: 'C', text: "说明在岗信息登记管理要求，拒绝无依据修改，建议完善佐证手续后再调整", type: 'principle', score: 3 }
                 ]
             }
         ];
 
-        // 三种测评结果配置
+        // 结果配置（完全匹配最新题目对应的行为解析，UI风格不变）
         const resultConfig = {
-            A: {
-                title: "冲突回避讨好型",
-                desc: "心里清楚事情不合规，但惧怕人际冲突、在意领导感受，习惯妥协退让，长期内心内耗，容易给自己埋下追责隐患。",
-                tip: "我拒绝的是违规操作，不是领导这个人，提醒风险是本职工作，不算顶撞；提前备好一套共情+合规方案话术，遇到踩线需求直接套用，不用临时纠结。",
-                book: "《非暴力沟通》《被讨厌的勇气》"
+            compliant: {
+                title: "讨好顺从型｜月亮牌倾向",
+                icon: "fas fa-moon",
+                color: "text-pink-500",
+                bgColor: "bg-pink-50",
+                description: "习惯优先照顾上级情绪，害怕拒绝带来负面评价，习惯性妥协让步。遇事优先维护人际关系和谐，把\"服从\"放在制度规则前面。明知存在风险，也会选择承接任务，习惯自己消化压力、掩盖问题，容易为了顾及情面触碰合规红线，承担不必要的连带风险。",
+                tips: [
+                    "分清\"尊重领导\"和\"无条件服从\"，服从的是合规工作安排，不是所有个人要求；",
+                    "拒绝不等于对立，客观陈述制度风险不是顶撞，是岗位履职义务；",
+                    "摒弃\"拒绝就会留下坏印象\"的固有认知，职场更看重风险把控能力；",
+                    "遇到违规指令，不要独自兜底扛下隐患，学会客观反馈，必要时留存沟通痕迹。"
+                ],
+                books: [
+                    "《关键对话：如何高效沟通》",
+                    "《边界感》"
+                ]
             },
-            B: {
-                title: "直白强硬型",
-                desc: "坚守公司制度，底线清晰，但沟通缺少共情，习惯直接硬刚，容易让领导下不来台，激化上下级矛盾。",
-                tip: "先接纳对方的难处再讲规则，温和表达底线，不等于放弃原则；每次开口前加一句共情铺垫，再说明约束、给出替代方案。",
-                book: "《关键对话》"
+            avoidant: {
+                title: "冲突回避型｜隐士牌倾向",
+                icon: "fas fa-mask",
+                color: "text-yellow-600",
+                bgColor: "bg-yellow-50",
+                description: "害怕矛盾冲突，既不愿意违心执行违规指令，又不敢正面表达立场。遇事习惯打太极、拖延搁置、假装不知情，寄希望于问题自行消失。不主动沟通风险，不明确表态，看似没有参与违规，实际属于履职缺位，一旦事情爆发，依然需要承担知情不报、消极处置的责任。",
+                tips: [
+                    "回避解决不了问题，模糊的态度容易让对方误以为默许同意；",
+                    "秘书岗位有风险提示责任，不能以\"不想掺和\"逃避本职；",
+                    "不需要强硬争吵，但必须清晰传递立场，给出明确反馈，不要悬置工作；",
+                    "遇到难以沟通的场景，可以暂停沟通，但不能彻底搁置，择机再次汇报提示风险。"
+                ],
+                books: [
+                    "《非暴力沟通》",
+                    "《被讨厌的勇气》"
+                ]
             },
-            C: {
-                title: "消极观望逃避型",
-                desc: "既不愿违规配合，也不敢主动沟通劝阻，选择沉默、拖延、装傻回避，问题只会持续发酵，最后被动承担责任。",
-                tip: "主动沟通提醒是提前化解麻烦，不是制造矛盾；收到不合理需求当天简短反馈，不拖延、不回避，同步可行的合规办法。",
-                book: "《向上管理》"
+            principle: {
+                title: "原则平衡型｜正义牌倾向",
+                icon: "fas fa-balance-scale",
+                color: "text-purple-600",
+                bgColor: "bg-purple-50",
+                description: "具备清晰的制度底线，尊重领导但不盲从。面对不合规事项，既不盲目顺从，也不激烈顶撞。能够客观讲清制度与风险，同时主动提供合规替代方案，做到\"守住原则、讲究方式、闭环留痕\"。可以平衡人际关系与岗位合规要求，是秘书岗位理想的处事模式。",
+                tips: [
+                    "保持现有原则意识，持续熟悉各项规章制度，做到提示风险有理有据；",
+                    "持续打磨沟通话术，根据领导性格调整表达方式，减少沟通对立感；",
+                    "养成重要事项留痕习惯，保护自身，也帮助领导充分识别决策风险；",
+                    "面对压力时，也允许自身产生顾虑情绪，不必苛求做到完全毫无心理负担。"
+                ],
+                books: [
+                    "《秘书工作手记》",
+                    "《向上沟通的艺术》"
+                ]
             }
         };
 
-        const questionWrap = document.getElementById("questionList");
-        const submitBtn = document.getElementById("submitBtn");
-        const resetBtn = document.getElementById("resetBtn");
-        const testBox = document.getElementById("testBox");
-        const resultBox = document.getElementById("resultBox");
+        // 全局变量
+        let currentQuestionIndex = 0;
+        let userAnswers = {};
+        let totalScores = { compliant: 0, avoidant: 0, principle: 0 };
 
-        // 渲染所有题目
-        function renderQuestions() {
-            questionWrap.innerHTML = "";
-            questionData.forEach((item, index) => {
-                const qWrap = document.createElement("div");
-                qWrap.className = "mb-8 last:mb-0";
-                qWrap.innerHTML = `
-                    <p class="font-medium mb-3">${item.q}</p>
-                    <div class="grid gap-2" id="q${index}">
-                        ${item.options.map(opt => `
-                            <label class="radio-item flex items-center gap-3">
-                                <input type="radio" name="q${index}" value="${opt.val}" class="accent-primary w-4 h-4">
-                                <span>${opt.label}</span>
-                            </label>
-                        `).join("")}
-                    </div>
+        // DOM元素
+        const introSection = document.getElementById('intro-section');
+        const quizSection = document.getElementById('quiz-section');
+        const resultSection = document.getElementById('result-section');
+        const startBtn = document.getElementById('start-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const currentQuestionSpan = document.getElementById('current-question');
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercent = document.getElementById('progress-percent');
+        const resultContent = document.getElementById('result-content');
+
+        function initEventListeners() {
+            startBtn.addEventListener('click', startQuiz);
+            prevBtn.addEventListener('click', showPreviousQuestion);
+            nextBtn.addEventListener('click', handleNextQuestion);
+            restartBtn.addEventListener('click', restartQuiz);
+        }
+
+        function startQuiz() {
+            introSection.classList.add('hidden');
+            quizSection.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            userAnswers = {};
+            totalScores = { compliant: 0, avoidant: 0, principle: 0 };
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = questions[currentQuestionIndex];
+            currentQuestionSpan.textContent = currentQuestionIndex + 1;
+            questionText.textContent = question.text;
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach(option => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option-card p-4 border-2 border-purple-100 rounded-xl cursor-pointer transition-all duration-300 hover:border-purple-400 hover:bg-purple-50 bg-white/70';
+                optionDiv.innerHTML = `
+                    <label class="flex items-center cursor-pointer">
+                        <input type="radio" name="question-${question.id}" value="${option.id}" class="mr-3 w-4 h-4 text-purple-600">
+                        <span class="text-dark">${option.id}. ${option.text}</span>
+                    </label>
                 `;
-                questionWrap.appendChild(qWrap);
-            })
+                optionsContainer.appendChild(optionDiv);
+
+                optionDiv.addEventListener('click', () => selectOption(question.id, option.id, optionDiv));
+            });
+
+            updateProgress();
+            updateButtonStates();
         }
 
-        // 获取所有选择并统计
-        function getSelectResult() {
-            const count = {A:0, B:0, C:0};
-            for(let i=0; i<questionData.length; i++){
-                const radios = document.querySelectorAll(`input[name="q${i}"]`);
-                let selected = null;
-                radios.forEach(r=>{
-                    if(r.checked) selected = r.value;
-                })
-                if(!selected) return null; // 有未答题目
-                count[selected] += 1;
+        function selectOption(questionId, optionId, optionDiv) {
+            const allOptions = optionsContainer.querySelectorAll('.option-card');
+            allOptions.forEach(option => {
+                option.classList.remove('border-purple-400', 'bg-purple-50');
+                option.querySelector('input').checked = false;
+            });
+
+            optionDiv.classList.add('border-purple-400', 'bg-purple-50');
+            optionDiv.querySelector('input').checked = true;
+
+            userAnswers[questionId] = optionId;
+            nextBtn.disabled = false;
+        }
+
+        function handleNextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+            } else {
+                calculateResult();
+                showResult();
             }
-            // 找出最多选项
-            let maxKey = "A";
-            let maxNum = count.A;
-            if(count.B > maxNum) {maxKey = "B"; maxNum = count.B;}
-            if(count.C > maxNum) {maxKey = "C"; maxNum = count.C;}
-            return maxKey;
         }
 
-        // 展示测评结果
-        function showResult(type) {
-            const res = resultConfig[type];
-            document.getElementById("resultTitle").innerText = res.title;
-            document.getElementById("resultDesc").innerText = res.desc;
-            document.getElementById("resultTip").innerText = res.tip;
-            document.getElementById("resultBook").innerText = res.book;
-            testBox.classList.add("hidden");
-            resultBox.classList.remove("hidden");
-        }
-
-        // 重置测试
-        function resetTest() {
-            renderQuestions();
-            resultBox.classList.add("hidden");
-            testBox.classList.remove("hidden");
-        }
-
-        // 提交点击事件
-        submitBtn.addEventListener("click", ()=>{
-            const res = getSelectResult();
-            if(res === null){
-                alert("请完成全部10道题目后再提交！");
-                return;
+        function showPreviousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion();
             }
-            showResult(res);
-        })
+        }
 
-        // 重置按钮
-        resetBtn.addEventListener("click", resetTest);
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressPercent.textContent = Math.round(progress);
+        }
 
-        // 页面初始化渲染题目
-        renderQuestions();
+        function updateButtonStates() {
+            prevBtn.classList.toggle('hidden', currentQuestionIndex === 0);
+            nextBtn.disabled = !userAnswers[questions[currentQuestionIndex].id];
+            nextBtn.innerHTML = currentQuestionIndex === questions.length - 1
+                ? '提交测试<i class="fas fa-check ml-2"></i>'
+                : '下一题<i class="fas fa-arrow-right ml-2"></i>';
+        }
+
+        // ========== 核心得分计算逻辑 ==========
+        function calculateResult() {
+            // 重置三类得分
+            totalScores = { compliant: 0, avoidant: 0, principle: 0 };
+
+            // 遍历所有10道题的答案，累加对应类型的分数
+            Object.entries(userAnswers).forEach(([questionId, optionId]) => {
+                const question = questions.find(q => q.id === parseInt(questionId));
+                const option = question.options.find(o => o.id === optionId);
+                totalScores[option.type] += option.score;
+            });
+
+            // 找出得分最高的类型，作为最终结果
+            const maxScore = Math.max(...Object.values(totalScores));
+            return Object.keys(totalScores).find(key => totalScores[key] === maxScore);
+        }
+
+        function showResult() {
+            quizSection.classList.add('hidden');
+            resultSection.classList.remove('hidden');
+
+            const resultType = calculateResult();
+            const result = resultConfig[resultType];
+
+            resultContent.innerHTML = `
+                <div class="text-center">
+                    <div class="w-24 h-24 ${result.bgColor} rounded-full flex items-center justify-center mx-auto mb-6 border border-purple-100">
+                        <i class="${result.icon} ${result.color} text-3xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold ${result.color} mb-4">${result.title}</h3>
+                    <p class="text-dark/70 leading-relaxed max-w-2xl mx-auto mb-8">${result.description}</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="${result.bgColor} rounded-xl p-6 border border-purple-100">
+                        <h4 class="font-bold text-xl mb-4 text-dark">
+                            <i class="fas fa-crystal-ball ${result.color} mr-2"></i>心态调整提示
+                        </h4>
+                        <ul class="space-y-3 text-dark/70">
+                            ${result.tips.map(tip => `<li class="flex items-start"><i class="fas fa-star ${result.color} mr-2 mt-1"></i>${tip}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="${result.bgColor} rounded-xl p-6 border border-purple-100">
+                        <h4 class="font-bold text-xl mb-4 text-dark">
+                            <i class="fas fa-book-open ${result.color} mr-2"></i>推荐阅读书籍
+                        </h4>
+                        <ul class="space-y-3 text-dark/70">
+                            ${result.books.map(book => `<li class="flex items-start"><i class="fas fa-feather-alt ${result.color} mr-2 mt-1"></i>${book}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="text-center p-6 ${result.bgColor} rounded-xl border border-purple-100">
+                    <h4 class="font-bold text-lg mb-3 ${result.color}">你的最终得分</h4>
+                    <div class="flex justify-center space-x-8 text-center">
+                        <div>
+                            <div class="text-2xl font-bold ${result.color}">${totalScores.compliant}</div>
+                            <div class="text-dark/60 text-sm">讨好顺从型</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold ${result.color}">${totalScores.avoidant}</div>
+                            <div class="text-dark/60 text-sm">冲突回避型</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold ${result.color}">${totalScores.principle}</div>
+                            <div class="text-dark/60 text-sm">原则平衡型</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function restartQuiz() {
+            resultSection.classList.add('hidden');
+            introSection.classList.remove('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', initEventListeners);
     </script>
 </body>
 </html>
